@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>건축법규 면적·주차 검토기</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">HIMMA PROJECT TOOL</p>
+        <h1>건축법규 면적·주차 검토기</h1>
+        <p class="hero-copy">값을 모두 입력한 뒤 화면 아래의 <strong>검토하기</strong> 버튼을 누르면 계산됩니다.</p>
+      </div>
+      <div class="hero-actions">
+        <button id="saveButton" class="button button-secondary" type="button">프로젝트 저장</button>
+        <button id="resetButton" class="button button-ghost" type="button">초기화</button>
+      </div>
+    </header>
+
+    <section class="section-card">
+      <div class="section-heading">
+        <div class="section-title-wrap">
+          <span class="section-number">01</span>
+          <h2>프로젝트 기본 설정</h2>
+        </div>
+        <p>모든 값은 언제든 수정할 수 있습니다.</p>
+      </div>
+
+      <div class="settings-grid">
+        <label class="field">
+          <span>대지면적</span>
+          <span class="input-line">
+            <input id="siteArea" type="number" min="0" step="any" inputmode="decimal" value="274.1" />
+            <em>㎡</em>
+          </span>
+        </label>
+
+        <label class="field">
+          <span>기본 엘리베이터 면적</span>
+          <span class="input-line">
+            <input id="defaultElevatorArea" type="number" min="0" step="any" inputmode="decimal" value="4.41" />
+            <em>㎡</em>
+          </span>
+        </label>
+
+        <label class="field">
+          <span>허용 건폐율</span>
+          <span class="input-line">
+            <input id="maxBcr" type="number" min="0" step="any" inputmode="decimal" value="60" />
+            <em>%</em>
+          </span>
+        </label>
+
+        <label class="field">
+          <span>허용 용적률</span>
+          <span class="input-line">
+            <input id="maxFar" type="number" min="0" step="any" inputmode="decimal" value="250" />
+            <em>%</em>
+          </span>
+        </label>
+
+        <label class="field">
+          <span>목표 주차대수</span>
+          <span class="input-line">
+            <input id="targetParking" type="number" min="0" step="1" inputmode="numeric" value="6" />
+            <em>대</em>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-heading">
+        <div class="section-title-wrap">
+          <span class="section-number">02</span>
+          <h2>층별 입력</h2>
+        </div>
+        <p>B2층의 기본 주차 산정용도는 카페입니다.</p>
+      </div>
+      <div id="floorsContainer" class="floors"></div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-heading">
+        <div class="section-title-wrap">
+          <span class="section-number">03</span>
+          <h2>주차 기준 설정</h2>
+        </div>
+        <p>현재 값은 기능 테스트용 임시 기준이며 실제 법규 확인 후 변경해야 합니다.</p>
+      </div>
+      <div id="parkingRulesContainer" class="parking-rules"></div>
+    </section>
+
+    <section class="review-panel">
+      <div>
+        <p class="review-kicker">입력을 모두 마쳤나요?</p>
+        <h2>검토 버튼을 눌러 결과를 계산하세요.</h2>
+        <p>입력 중에는 계산하거나 화면을 다시 만들지 않으므로 숫자를 자유롭게 연속 입력할 수 있습니다.</p>
+      </div>
+      <button id="reviewButton" class="button button-primary button-large" type="button">검토하기</button>
+    </section>
+
+    <section id="resultsSection" class="section-card results-section is-hidden" aria-live="polite">
+      <div class="section-heading">
+        <div class="section-title-wrap">
+          <span class="section-number">04</span>
+          <h2>검토 결과</h2>
+        </div>
+        <p id="reviewedAt"></p>
+      </div>
+
+      <div id="summaryCards" class="summary-grid"></div>
+
+      <div class="result-block">
+        <div class="result-block-heading">
+          <h3>층별 면적 결과</h3>
+          <p>전체면적, 엘리베이터 제외면적, 순사용면적을 ㎡와 평으로 표시합니다.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>층</th>
+                <th>전체면적</th>
+                <th>엘리베이터 제외</th>
+                <th>순사용면적</th>
+                <th>주차 산정면적</th>
+                <th>주차지수</th>
+              </tr>
+            </thead>
+            <tbody id="floorResultsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="result-block">
+        <div class="result-block-heading">
+          <h3>목표 주차대수까지의 여유 면적</h3>
+          <p>각 용도를 추가한다고 가정했을 때의 참고값입니다.</p>
+        </div>
+        <div id="parkingMarginGrid" class="margin-grid"></div>
+      </div>
+
+      <p class="legal-note">
+        본 계산 결과는 입력된 면적과 임시 주차기준을 바탕으로 한 설계 검토용 참고값입니다.
+        실제 허가 및 법정 주차대수는 적용 법령·조례·시설 용도·면적 산정 방식에 따라 달라질 수 있습니다.
+      </p>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
